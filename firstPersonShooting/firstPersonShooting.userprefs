@@ -2,8 +2,9 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Zombie.cs">
     <Files>
-      <File FileName="Assets\Scripts\Player.cs" Line="40" Column="9" />
-      <File FileName="Assets\Scripts\Zombie.cs" Line="42" Column="20" />
+      <File FileName="Assets\Scripts\Zombie.cs" Line="81" Column="38" />
+      <File FileName="Assets\Scripts\AutoDestory.cs" Line="17" Column="29" />
+      <File FileName="Assets\Scripts\Player.cs" Line="30" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

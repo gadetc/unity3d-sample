@@ -28,6 +28,10 @@ public class Zombie : MonoBehaviour {
 		agent = GetComponent<NavMeshAgent>();
 		animator = GetComponent<Animator>();
 	}
+
+	public bool IsDeath(){
+		return hp <= 0;
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -76,11 +80,19 @@ public class Zombie : MonoBehaviour {
 		}else if(InState(state, "attack")){
 			animator.SetBool("attack", false);
 
+			//设定在此范围内造成的伤害为1点，太大范围的话因为update函数执行时处于attack状态比较长，所以会一直持续掉血
+			if(state.normalizedTime > 0.8f && state.normalizedTime < 0.82f){
+				DamagePlayer();
+				actTimer = 1;
+				animator.SetBool("idle", true);
+			}
+
 			RotateToPlayer();
 
-			if(state.normalizedTime >= 1f){
-				animator.SetBool("idle", true);
-				actTimer = 2;
+		}else if(InState(state, "death")){
+			if(AninatorPlayLargerThan(state, 5)){
+				Destroy(this.gameObject);
+				GUIManager.instance.AddScore(100);
 			}
 		}
 	}
@@ -89,6 +101,14 @@ public class Zombie : MonoBehaviour {
 		//return state.fullPathHash == Animator.StringToHash("Base Layer."+stateStr);
 		//使用如下的IsName方法替代上面的哈希值判断
 		return state.IsName(stateStr);
+	}
+
+	bool AninatorPlayEnough(AnimatorStateInfo state){
+		return state.normalizedTime >= 1f;
+	}
+
+	bool AninatorPlayLargerThan(AnimatorStateInfo state, float time){
+		return state.normalizedTime >= time;
 	}
 
 	bool DistanceToPlayerLessEnough(){
@@ -114,6 +134,20 @@ public class Zombie : MonoBehaviour {
 		float speed = rotateSpeed * Time.deltaTime;
 		float angle = Mathf.MoveTowardsAngle(old.y, playerY, speed);
 		transform.eulerAngles = new Vector3(0, angle, 0);
+	}
+
+	void DamagePlayer(){
+		animator.SetBool("idle", true);
+		actTimer = 2;
+		player.OnDamage(1);
+	}
+
+	void OnDamage(int damage){
+		hp -= damage;
+
+		if(IsDeath()){
+			animator.SetBool("death", true);
+		}
 	}
 
 }

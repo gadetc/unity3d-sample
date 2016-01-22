@@ -104,7 +104,7 @@ public class Player : MonoBehaviour {
 		Gizmos.DrawIcon(transform.position, "../Gizmos/Spawn.tif");
 	}
 
-	void OnDamage(int damage){
+	public void OnDamage(int damage){
 		hp -= damage;
 
 		GUIManager.instance.SetHp(hp);
@@ -129,7 +129,7 @@ public class Player : MonoBehaviour {
 				out hitInfo, 100, layerMask);
 			if(hit){
 				if(hitInfo.collider.gameObject.tag == "enemy"){
-					hitInfo.collider.gameObject.SendMessage ("OnDanage", 1);
+					hitInfo.collider.gameObject.SendMessage ("OnDamage", 1);
 				}
 				Instantiate(fx, hitInfo.point, hitInfo.transform.rotation);
 			}
