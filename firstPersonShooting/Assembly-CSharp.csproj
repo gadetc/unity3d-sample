@@ -45,6 +45,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\AutoDestory.cs" />
+     <Compile Include="Assets\Scripts\GUIManager.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\Zombie.cs" />
  <Reference Include="UnityEngine.UI">

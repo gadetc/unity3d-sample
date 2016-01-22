@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (AudioSource))]
+[RequireComponent (typeof (CharacterController))]
 public class Player : MonoBehaviour {
 
 	private CharacterController characterController;
@@ -14,6 +16,13 @@ public class Player : MonoBehaviour {
 
 	public int hp;
 
+	private Transform muzzlepoint;
+	public LayerMask layerMask;
+	public Transform fx;
+
+	public AudioClip shootSound;
+	private float shootTimer;
+
 	// Use this for initialization
 	void Start () {
 		characterController = GetComponent<CharacterController>();
@@ -26,6 +35,8 @@ public class Player : MonoBehaviour {
 		cameraTransform.rotation = transform.rotation;
 		cameraAngles = cameraTransform.eulerAngles;
 
+		muzzlepoint = cameraTransform.FindChild("M16/weapon/muzzlepoint").transform;
+
 		Cursor.lockState = CursorLockMode.Locked;
 	}
 	
@@ -35,6 +46,7 @@ public class Player : MonoBehaviour {
 			return;
 		}
 		Move();
+		Shoot();
 	}
 
 	public bool IsDeath(){
@@ -89,7 +101,39 @@ public class Player : MonoBehaviour {
 	}
 
 	void OnDrawGizmos(){
-		Gizmos.DrawIcon(transform.position, "../Spawn.tif");
+		Gizmos.DrawIcon(transform.position, "../Gizmos/Spawn.tif");
+	}
+
+	void OnDamage(int damage){
+		hp -= damage;
+
+		GUIManager.instance.SetHp(hp);
+
+		if(IsDeath()){
+			Cursor.lockState = CursorLockMode.None;
+		}
+	}
+
+	void Shoot(){
+		shootTimer -= Time.deltaTime;
+		if(Input.GetButtonUp("Fire1") && shootTimer <= 0){
+			shootTimer = 0.1f;
+			GetComponent<AudioSource>().PlayOneShot(shootSound);
+			GUIManager.instance.SubBullet(1);
+
+			RaycastHit hitInfo;
+
+			bool hit = Physics.Raycast(
+				muzzlepoint.position, 
+				cameraTransform.TransformDirection(Vector3.forward), 
+				out hitInfo, 100, layerMask);
+			if(hit){
+				if(hitInfo.collider.gameObject.tag == "enemy"){
+					hitInfo.collider.gameObject.SendMessage ("OnDanage", 1);
+				}
+				Instantiate(fx, hitInfo.point, hitInfo.transform.rotation);
+			}
+		}
 	}
 
 }
