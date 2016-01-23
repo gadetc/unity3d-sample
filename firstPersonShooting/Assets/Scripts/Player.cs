@@ -38,6 +38,7 @@ public class Player : MonoBehaviour {
 		muzzlepoint = cameraTransform.FindChild("M16/weapon/muzzlepoint").transform;
 
 		Cursor.lockState = CursorLockMode.Locked;
+		GUIManager.instance.SetHp(hp);
 	}
 	
 	// Update is called once per frame

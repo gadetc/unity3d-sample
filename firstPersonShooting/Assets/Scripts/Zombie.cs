@@ -22,6 +22,13 @@ public class Zombie : MonoBehaviour {
 
 	private float actTimer = 2;
 
+	protected ZombieGenerator generator;
+
+	public void Init(ZombieGenerator generator){
+		generator.IncrCount();
+		this.generator = generator;
+	}
+
 	// Use this for initialization
 	void Start () {
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
@@ -81,7 +88,7 @@ public class Zombie : MonoBehaviour {
 			animator.SetBool("attack", false);
 
 			//设定在此范围内造成的伤害为1点，太大范围的话因为update函数执行时处于attack状态比较长，所以会一直持续掉血
-			if(state.normalizedTime > 0.8f && state.normalizedTime < 0.82f){
+			if(state.normalizedTime > 0.8f && state.normalizedTime < 0.815f){
 				DamagePlayer();
 				actTimer = 1;
 				animator.SetBool("idle", true);
@@ -91,8 +98,7 @@ public class Zombie : MonoBehaviour {
 
 		}else if(InState(state, "death")){
 			if(AninatorPlayLargerThan(state, 5)){
-				Destroy(this.gameObject);
-				GUIManager.instance.AddScore(100);
+				OnDeath();
 			}
 		}
 	}
@@ -112,7 +118,7 @@ public class Zombie : MonoBehaviour {
 	}
 
 	bool DistanceToPlayerLessEnough(){
-		return DistanceToPlayerLessThan(1.5f);
+		return DistanceToPlayerLessThan(2f);
 	}
 
 	bool DistanceToPlayerLessThan(float distance){
@@ -148,6 +154,12 @@ public class Zombie : MonoBehaviour {
 		if(IsDeath()){
 			animator.SetBool("death", true);
 		}
+	}
+
+	void OnDeath(){
+		generator.DecrCount();
+		Destroy(this.gameObject);
+		GUIManager.instance.AddScore(100);
 	}
 
 }
