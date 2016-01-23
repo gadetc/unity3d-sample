@@ -3,6 +3,7 @@ using System.Collections;
 
 [RequireComponent (typeof (NavMeshAgent))]
 [RequireComponent (typeof (Animator))]
+[RequireComponent (typeof (CapsuleCollider))]
 public class Zombie : MonoBehaviour {
 
 	//玩家
@@ -24,6 +25,8 @@ public class Zombie : MonoBehaviour {
 
 	protected ZombieGenerator generator;
 
+	private CapsuleCollider capsuleCollider;
+
 	public void Init(ZombieGenerator generator){
 		generator.IncrCount();
 		this.generator = generator;
@@ -34,6 +37,7 @@ public class Zombie : MonoBehaviour {
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 		agent = GetComponent<NavMeshAgent>();
 		animator = GetComponent<Animator>();
+		capsuleCollider = GetComponent<CapsuleCollider>();
 	}
 
 	public bool IsDeath(){
@@ -97,7 +101,10 @@ public class Zombie : MonoBehaviour {
 			RotateToPlayer();
 
 		}else if(InState(state, "death")){
-			if(AninatorPlayLargerThan(state, 5)){
+			if (capsuleCollider.enabled) {
+				capsuleCollider.enabled = false;
+			}
+			if (AninatorPlayLargerThan (state, 5)) {
 				OnDeath();
 			}
 		}
@@ -118,7 +125,7 @@ public class Zombie : MonoBehaviour {
 	}
 
 	bool DistanceToPlayerLessEnough(){
-		return DistanceToPlayerLessThan(2f);
+		return DistanceToPlayerLessThan(1.95f);
 	}
 
 	bool DistanceToPlayerLessThan(float distance){
