@@ -74,7 +74,7 @@ public class Zombie : MonoBehaviour {
 		}else if(InState(state, "run")){
 			animator.SetBool("run", false);
 
-			if(DistanceToPlayerLessEnough ()){
+			if(DistanceToPlayerLessEnough()){
 				animator.SetBool ("attack", true);
 				agent.ResetPath ();
 				return;
@@ -90,20 +90,21 @@ public class Zombie : MonoBehaviour {
 			}
 		}else if(InState(state, "attack")){
 			animator.SetBool("attack", false);
+			if (!DistanceToPlayerLessEnough()) {
+				animator.SetBool ("idle", true);
+			} else {
+				//设定在此范围内造成的伤害为1点，太大范围的话因为update函数执行时处于attack状态比较长，所以会一直持续掉血
+				if (state.normalizedTime > 0.8f && state.normalizedTime < 0.815f) {
+					DamagePlayer ();
+					actTimer = 1;
+					animator.SetBool ("idle", true);
+				}
 
-			//设定在此范围内造成的伤害为1点，太大范围的话因为update函数执行时处于attack状态比较长，所以会一直持续掉血
-			if(state.normalizedTime > 0.8f && state.normalizedTime < 0.815f){
-				DamagePlayer();
-				actTimer = 1;
-				animator.SetBool("idle", true);
+				RotateToPlayer ();
 			}
-
-			RotateToPlayer();
 
 		}else if(InState(state, "death")){
-			if (capsuleCollider.enabled) {
-				capsuleCollider.enabled = false;
-			}
+			CapsuleColliderDisable();
 			if (AninatorPlayLargerThan (state, 5)) {
 				OnDeath();
 			}
@@ -125,7 +126,7 @@ public class Zombie : MonoBehaviour {
 	}
 
 	bool DistanceToPlayerLessEnough(){
-		return DistanceToPlayerLessThan(1.95f);
+		return DistanceToPlayerLessThan(1.9f);
 	}
 
 	bool DistanceToPlayerLessThan(float distance){
@@ -160,6 +161,12 @@ public class Zombie : MonoBehaviour {
 
 		if(IsDeath()){
 			animator.SetBool("death", true);
+		}
+	}
+
+	void CapsuleColliderDisable(){
+		if (capsuleCollider.enabled) {
+			capsuleCollider.enabled = false;
 		}
 	}
 
